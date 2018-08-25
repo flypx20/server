@@ -50,6 +50,14 @@ app.use(session({
 }));
 
 app.use((req,res,next)=>{
+    if (req.method == 'OPTIONS') {
+        res.end('ok');
+    }else{
+        next();
+    }
+});
+
+app.use((req,res,next)=>{
 	req.userInfo  = req.session.userInfo || {};
 	next();	
 });
@@ -60,7 +68,7 @@ app.use(bodyParser.json());
 
 //处理路由
 app.use("/admin",require('./router/admin.js'));
-
+app.use("/user",require('./router/use.js'));
 /*app.use("/",require('./routes/index.js'));
 app.use("/user",require('./routes/user.js'));
 app.use("/category",require('./routes/category.js'));

@@ -56,16 +56,34 @@ router.post("/login",(req,res)=>{
         }
     });
 });
+    router.get('/logout',(req,res)=>{
+        req.session.destroy();
+        res.json({
+            code:0,
+            message:''
+        });
+    });
+    //权限控制
+    router.use((req,res,next)=>{
+        if(req.userInfo.isAdmin){
+            next();
+        }else{
+            res.json({
+                code:10
+            });
+        }
+    })
 
+    .get('/count',(req,res)=>{
+        res.json({
+            code:0,
+            message:'',
+            userCount:100,
+            goodsCount:110,
+            catesCount:120
+        });
+    });
 
-//权限控制
-router.use((req,res,next)=>{
-    if(req.userInfo.isAdmin){
-        next();
-    }else{
-        res.send('<h1>请用管理员账号登录</h1>');
-    }
-});
 
 //显示管理员首页
 router.get("/",(req,res)=>{

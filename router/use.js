@@ -6,13 +6,7 @@ const hmac = require('../hmac/hmac.js');
 
 
 bookRouter
-    .get('/logout',(req,res)=>{
-    	req.session.destroy();
-    	res.json({
-    		code:0,
-    		message:''
-    	});
-	})
+    
 	.post('/regist',(req,res)=>{
 		let body = req.body;
 		wish.findOne({username:body.username})
