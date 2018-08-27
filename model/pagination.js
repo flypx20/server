@@ -8,7 +8,7 @@ function pagination(options){
         options.model.countDocuments(options.query)
         .then((count)=>{
             let list = [];
-            let limit = 2;
+            let limit = 5;
             let pages = Math.ceil(count / limit);
              if(parseInt(page) > pages){
                 page = pages;
@@ -35,10 +35,10 @@ function pagination(options){
             .skip(skip)
             .then((user)=>{
                  resolve({
+                    count:count,
                     docs:user,
                     page:page*1,
-                    list:list,
-                    pages:pages
+                    pageSize:limit
                });
             });
         });

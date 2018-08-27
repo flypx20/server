@@ -6,8 +6,13 @@ const fzfSchema = mongoose.Schema({
 		isAdmin:{
 			type:Boolean,
 			default:false
-		}
-});
+		},
+		phone:Number,
+		email:String
+},{ timestamps: {
+        createdAt: 'created',
+        updatedAt: 'updated'
+    }});
 
 const UserModle = mongoose.model('user',fzfSchema);
 

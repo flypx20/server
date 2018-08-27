@@ -26,8 +26,26 @@ const router = Router();
             res.send('err');            
         }
     });
-});*/
-
+    const users = [];
+    for (var i = 0; i < 50; i++) {
+        users.push({
+            username:'test'+i,
+            password:hmac('test1'),
+            isAdmin:false,
+            phone:18790057163,
+            email:'172892@qq.com'
+        });
+    }
+    console.log(users);
+    UserModel.create(users,(err,newUsers)=>{
+        if(!err){//插入成功
+            res.send('ok');
+        }else{
+            res.send('err');            
+        }
+    });
+});
+*/
 //用户登录
 router.post("/login",(req,res)=>{
     let body = req.body;
@@ -84,37 +102,35 @@ router.post("/login",(req,res)=>{
         });
     });
 
-
-//显示管理员首页
-router.get("/",(req,res)=>{
-    res.render('admin/index',{
-        userInfo:req.userInfo
-    });
-});
-
-//显示用户列表
 router.get('/users',(req,res)=>{
-
+console.log('admin/users',req.query.page);
     //获取所有用户的信息,分配给模板
 
     let options = {
         page: req.query.page,//需要显示的页码
         model:UserModel, //操作的数据模型
         query:{}, //查询条件
-        projection:'_id username isAdmin', //投影，
         sort:{_id:-1} //排序
     };
 
     pagination(options)
     .then((data)=>{
-        res.render('admin/user_list',{
-            userInfo:req.userInfo,
-            users:data.docs,
-            page:data.page,
-            list:data.list,
-            pages:data.pages,
-            url:'/admin/users'
+        res.json({
+            code:0,
+            current:data.page,
+            total:data.count,
+            list:data.docs,
+            pageSize:data.pageSize
         }); 
+    });
+});
+
+
+
+//显示管理员首页
+router.get("/",(req,res)=>{
+    res.render('admin/index',{
+        userInfo:req.userInfo
     });
 });
 
