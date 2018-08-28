@@ -1,58 +1,37 @@
 const express = require('express');
 var bookRouter = express.Router();
-const swig = require('swig');
 const category = require('../model/category.js');
 const pagination = require('../model/pagination.js');
 
 
-   bookRouter.get('/',(req,res)=>{
-    	pagination({
-
-    		page:req.query.page,
-    		model:category,
-    		query:{},
-    		projection:'name _id sort',
-    	})
-    	.then((data)=>{
-    		res.render('admin/categoryList',{
-    			name:req.userInfo,
-    			sort:{_id:1},
-    			categoryList:data.docs,
-    			page:data.page,
-    			list:data.list
-    		});
-
-    	});
-	})
-	.get('/category_add',(req,res)=>{
-    	res.render('admin/category_edit_add',{
-    		name:req.userInfo
-    	});
-	})
-	.post('/add',(req,res)=>{
+   bookRouter
+   .post('/',(req,res)=>{
 		let body = req.body;
-		category.findOne({name:body.name})
+		category.findOne({name:body.name,pid:body.pid})
 		.then((cate)=>{
 			if (cate) {
-				res.render('admin/error',{
-					name:req.userInfo,
-					url:"新增分类",
+				res.json({
+					code:1,
 					message:'新增分类失败,存在同名分类'
 				});
 			}else{
-				category.insertMany({name:body.name,order:parseInt(body.order)})
+				category.insertMany({name:body.name,pid:body.pid})
 				.then((docs)=>{
 					if (docs) {
-						res.render('admin/success',{
-							name:req.userInfo,
-							url:"新增分类",
-							message:'新增分类成功'
-						});
-					}else{
-						res.render('admin/error',{
-							name:req.userInfo,
-							url:"新增分类",
-							message:'请检查网络'
+						category.find({pid:body.pid})
+						.then((cates)=>{
+							if (body.pid == 0) {
+								res.json({
+									code:0,
+									message:'新增分类成功',
+									data:cates
+								});
+							}else{
+								res.json({
+									code:0,
+									message:'新增分类成功'
+								});
+							}
 						});
 					}
 				});
@@ -60,6 +39,61 @@ const pagination = require('../model/pagination.js');
 			}
 		});
 	})
+   .get('/',(req,res)=>{
+    	let pid = req.query.pid;
+    	let page = req.query.page;
+    	if (page) {
+    		category.findPagination(req,{pid:pid})
+    		.then((result)=>{
+    			if (result) {
+    				res.json({
+    					code:0,
+    					data:{
+    						total:result.count,
+    						current:result.page,
+    						list:result.docs,
+    						pageSize:result.pageSize
+    					}
+    				});
+    			}else{
+    				res.json({
+    					code:1,
+    					message:'获取数据失败，请重新获取'
+    				});
+    			}
+    		});
+    	}else{
+	    	category.find({pid:pid})
+	    	.then((cates)=>{
+	    		if (cates) {
+	    			res.json({
+	    				code:0,
+	    				data:cates
+	    			});
+	    		}else{
+	    			res.json({
+	    				code:1,
+	    				message:'获取分类失败'
+	    			});
+	    		}
+	    	});    		
+    	}
+
+	})
+
+
+
+
+
+
+
+
+	.get('/category_add',(req,res)=>{
+    	res.render('admin/category_edit_add',{
+    		name:req.userInfo
+    	});
+	})
+	
 	.get('/edit/:id',(req,res)=>{
 		res.render('admin/category_edit_add',{
 			name:req.userInfo,
