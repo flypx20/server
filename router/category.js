@@ -80,6 +80,84 @@ const pagination = require('../model/pagination.js');
     	}
 
 	})
+   .get('/edit',(req,res)=>{
+		let id = req.query.id;
+		let name = req.query.name;
+		let pid = req.query.pid;
+		category.findById(id)
+		.then((docs)=>{
+			if (name == docs.name && order == docs.order ) {
+				res.json({
+					code:1,
+					message:'编辑分类失败，存在相同分类'
+				});
+			}else{
+				category.findOne({name:name,_id:{$ne:id}})
+				.then((cate)=>{
+					if (cate) {
+						res.json({
+							code:1,
+							message:'编辑分类失败，存在相同分类'
+						});
+					}else{
+						category.update({_id:id},{name:name},(err,raw)=>{
+						if(!err){
+							category.findPagination(req,{pid:pid})
+    						.then((result)=>{
+    							res.json({
+			    					code:0,
+			    					data:{
+			    						total:result.count,
+			    						current:result.page,
+			    						list:result.docs,
+			    						pageSize:result.pageSize
+			    					},
+			    					message:'更改分类名称成功'
+    							});
+    						});
+											
+						}else{
+					 		res.json({
+								code:1,
+								message:'修改分类失败,数据库操作失败',
+							});					
+						}
+					});						
+					}
+				});
+			}
+		});
+	})
+   .get('/order',(req,res)=>{
+		let id = req.query.id;
+		let order = req.query.order;
+		let pid = req.query.pid;
+			category.update({_id:id},{order:order},(err,raw)=>{
+				if(!err){
+					category.findPagination(req,{pid:pid})
+					.then((result)=>{
+						res.json({
+	    					code:0,
+	    					data:{
+	    						total:result.count,
+	    						current:result.page,
+	    						list:result.docs,
+	    						pageSize:result.pageSize
+	    					},
+	    					message:'设置排序成功'
+						});
+					});
+									
+				}else{
+			 		res.json({
+						code:1,
+						message:'设置排序失败,数据库操作失败',
+					});					
+				}
+			});						
+		})
+
+			
 
 
 
@@ -100,46 +178,7 @@ const pagination = require('../model/pagination.js');
 			id:req.params.id
 		});
 	})
-	.post('/edit',(req,res)=>{
-		let body = req.body;
-		category.findById(body.id)
-		.then((docs)=>{
-			if (body.name == docs.name && body.order == docs.order ) {
-				res.render('admin/error',{
-					name:req.userInfo,
-					url:"编辑分类",
-					message:'编辑分类失败，存在相同分类'
-				});
-			}else{
-				category.findOne({name:body.name,_id:{$ne:body.id}})
-				.then((cate)=>{
-					if (cate) {
-						res.render('admin/error',{
-							name:req.userInfo,
-							url:"编辑分类",
-							message:'编辑分类失败，存在相同分类'
-						});
-					}else{
-						category.update({_id:body.id},{name:body.name,order:body.order},(err,raw)=>{
-						if(!err){
-							res.render('admin/success',{
-								name:req.userInfo,
-								message:'修改分类成功',
-								url:"编辑分类"
-							});					
-						}else{
-					 		res.render('admin/error',{
-								name:req.userInfo,
-								message:'修改分类失败,数据库操作失败',
-								url:"编辑分类"
-							});					
-						}
-					});						
-					}
-				});
-			}
-		});
-	})
+	
 	.get('/delete/:id',(req,res)=>{
 		category.deleteOne({_id:req.params.id})
 		.then((data)=>{

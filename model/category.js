@@ -17,6 +17,7 @@ fzfSchema.statics.findPagination = function(req,query={}){
 	        page:req.query.page,
 	        model:this,
 	        query:query,
+	        sort:{order:-1}
 	    })
         .then((data)=>{
         	resolve(data);

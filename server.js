@@ -22,12 +22,14 @@ db.once('open',()=>{
 
 const app = express();
 
+app.use(express.static('public'));
+
 //跨域设置
 app.use((req,res,next)=>{
 	res.append("Access-Control-Allow-Origin","http://localhost:3001");
 	res.append("Access-Control-Allow-Credentials",true);
 	res.append("Access-Control-Allow-Methods","GET, POST, PUT,DELETE");
-	res.append("Access-Control-Allow-Headers", "Content-Type, X-Requested-With"); 
+	res.append("Access-Control-Allow-Headers", "Content-Type, X-File-Name,X-Requested-With"); 
 	next();
 });
 
@@ -69,6 +71,7 @@ app.use(bodyParser.json());
 //处理路由
 app.use("/admin",require('./router/admin.js'));
 app.use("/category",require('./router/category.js'));
+app.use("/product",require('./router/product.js'));
 // app.use("/user",require('./router/use.js'));
 /*app.use("/",require('./routes/index.js'));
 app.use("/user",require('./routes/user.js'));

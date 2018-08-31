@@ -33,6 +33,7 @@ function pagination(options){
             que.sort(options.sort)
             .limit(limit)
             .skip(skip)
+            .sort(options.sort)
             .then((user)=>{
                  resolve({
                     count:count,
