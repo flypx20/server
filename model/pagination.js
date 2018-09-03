@@ -23,7 +23,7 @@ function pagination(options){
             let skip = (page -1)*limit;
              
             
-           let que =  options.model.find(options.query,options.projections);
+           let que =  options.model.find(options.query,options.projection);
            if (options.populate) {
                 for (let i = 0; i < options.populate.length; i++) {
                     que =  que.populate(options.populate[i]);

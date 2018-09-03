@@ -165,12 +165,6 @@ const pagination = require('../model/pagination.js');
 
 
 
-
-	.get('/category_add',(req,res)=>{
-    	res.render('admin/category_edit_add',{
-    		name:req.userInfo
-    	});
-	})
 	
 	.get('/edit/:id',(req,res)=>{
 		res.render('admin/category_edit_add',{
