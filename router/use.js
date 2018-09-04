@@ -4,9 +4,23 @@ const wish = require('../model/model.js');
 const swig = require('swig');
 const hmac = require('../hmac/hmac.js');
 
-
 bookRouter
-    
+.use((req,res,next)=>{
+        if(req.userInfo.isAdmin){
+            next();
+        }else{
+            res.json({
+                code:10
+            });
+        }
+    })
+    .get('/logout',(req,res)=>{
+        req.session.destroy();
+        res.json({
+            code:0,
+            message:''
+        });
+    })
 	.post('/regist',(req,res)=>{
 		let body = req.body;
 		wish.findOne({username:body.username})
