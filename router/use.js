@@ -13,14 +13,22 @@ bookRouter
     })
      .get('/userInfo',(req,res)=>{
         if (req.userInfo._id) {
-        	res.json({
-        		code:0,
-        		username:req.userInfo.username,
+        	wish.findById(req.userInfo._id,'username email phone')
+        	.then((userInfo)=>{
+        		if (userInfo) {
+		         	res.json({
+		        		code:0,
+		        		username:req.userInfo.username,
+		        		userInfo:userInfo
+		        	});       			
+		         }else{
+		         	res.json({
+		         		code:1,
+		         		message:'未知错误'
+		         	});
+		         }
         	});
-        }else{
-        	res.json({
-        		code:10
-        	});
+
         }
     })
     .get('/checkusername',(req,res)=>{
