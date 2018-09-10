@@ -32,15 +32,15 @@ const fzfSchema = mongoose.Schema({
 		default:0
 	}						
 },{timestamps:true});
-fzfSchema.statics.findPagination = function(req,query={}){
+fzfSchema.statics.findPagination = function(req,query={},projection='productName _id status productPrice order',sort={_id:-1}){
 
 	return new Promise((resolve,reject)=>{
 		pagination({
 	        page:req.query.page,
 	        model:this,
 	        query:query,
-	        projection:'productName _id status productPrice order', //投影，
-        	sort:{_id:-1},
+	        projection:projection, //投影，
+        	sort:sort,
         	populate:[{path:'category',select:'_id'}] //排序
 	    })
         .then((data)=>{

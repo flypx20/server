@@ -18,6 +18,10 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage: storage });
 
+
+
+
+
 router.use((req,res,next)=>{
     if(req.userInfo.isAdmin){
         next();

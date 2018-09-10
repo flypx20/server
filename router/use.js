@@ -2,6 +2,7 @@ const express = require('express');
 var bookRouter = express.Router();
 const wish = require('../model/model.js');
 const hmac = require('../hmac/hmac.js');
+const product = require('../model/product.js');
 
 bookRouter
     .get('/logout',(req,res)=>{
@@ -12,7 +13,6 @@ bookRouter
         });
     })
      .get('/userInfo',(req,res)=>{
-        if (req.userInfo._id) {
         	wish.findById(req.userInfo._id,'username email phone')
         	.then((userInfo)=>{
         		if (userInfo) {
@@ -29,7 +29,7 @@ bookRouter
 		         }
         	});
 
-        }
+
     })
     .get('/checkusername',(req,res)=>{
 		wish.findOne({username:req.query.username})
@@ -75,7 +75,6 @@ email:body.email},(err,data)=>{
 	})
 	.post('/login',function(req,res) {
 		let body = req.body;
-
 		wish.findOne({username:body.username,password:hmac(body.password),isAdmin:false})
 		.then((data)=>{
 			if (!data) {
@@ -91,6 +90,7 @@ email:body.email},(err,data)=>{
 					isAdmin:data.isAdmin
 				};
 				req.session.userInfo = result;
+				console.log(req.session.userInfo);
 				res.json(result);
 			}
 		});
