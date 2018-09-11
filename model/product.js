@@ -49,6 +49,9 @@ fzfSchema.statics.findPagination = function(req,query={},projection='productName
 	});
 	
 };
+
+
+
 const productModle = mongoose.model('product',fzfSchema);
 
 

@@ -8,7 +8,7 @@ function pagination(options){
         options.model.countDocuments(options.query)
         .then((count)=>{
             let list = [];
-            let limit = 5;
+            let limit = 2;
             let pages = Math.ceil(count / limit);
              if(parseInt(page) > pages){
                 page = pages;

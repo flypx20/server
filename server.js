@@ -73,6 +73,7 @@ app.use("/admin",require('./router/admin.js'));
 app.use("/category",require('./router/category.js'));
 app.use("/product",require('./router/product.js'));
 app.use("/user",require('./router/use.js'));
+app.use("/cart",require('./router/cart.js'));
 /*app.use("/",require('./routes/index.js'));
 app.use("/user",require('./routes/user.js'));
 app.use("/category",require('./routes/category.js'));

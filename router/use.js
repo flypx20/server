@@ -12,42 +12,7 @@ bookRouter
             message:''
         });
     })
-    .get('/productList',(req,res)=>{
-    	let query = {status:0};
-    		if (req.query.categoryId) {
-    			query.category = req.query.categoryId;
-    		}else{
-    			query.productName = new RegExp(req.query.keyword,'ig');
-    		}
-    		let sort = {};
-    	if (req.query.orderBy == 'default') {
-    		sort = {_id:-1};
-    	}else if(req.query.orderBy=='price-down'){
-    		sort = {productPrice:-1};
-    	}else if(req.query.orderBy=='price-up'){
-    		sort = {productPrice:1};
-    	}
-    	let projection = '_id status productPrice productName imageList'
-        product.findPagination(req,query,projection,sort)
-        .then((result)=>{
-          if (result) {
-            res.json({
-              code:0,
-              data:{
-                total:result.count,
-                current:result.page,
-                list:result.docs,
-                pageSize:result.pageSize
-              }
-            });
-          }else{
-            res.json({
-              code:1,
-              message:'获取数据失败，请重新获取'
-            });
-          }
-        });
-    })
+
      .get('/userInfo',(req,res)=>{
         	wish.findById(req.userInfo._id,'username email phone')
         	.then((userInfo)=>{
