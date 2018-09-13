@@ -19,10 +19,18 @@ router.post('/',(req,res)=>{
 	userModel.findById(req.userInfo._id)
 	.then((user)=>{
 		if (user.cart) {
-			user.cart.cartList.push({
-				product:body.productId,
-				boughtCount:body.count
+			let cartItem = user.cart.cartList.find((item)=>{
+				return item.product = body.productId;
 			});
+			if (cartItem) {
+				cartItem.boughtCount = cartItem.boughtCount+parseInt(body.count);
+			}else{
+				user.cart.cartList.push({
+					product:body.productId,
+					boughtCount:body.count
+				});				
+			}
+
 		}else{
 			user.cart = {
 				cartList:[{
@@ -32,21 +40,29 @@ router.post('/',(req,res)=>{
 			};
 		}
 		user.save()
-		.then((err,data)=>{
-			if (!err) {
+		.then((data)=>{
+			if (data) {
 				res.json({
 					code:0,
 					data:data
-				});
-			}else{
-				res.json({
-					code:1,
-					message:'添加购车失败'
 				});
 			}
 		});
 	});
 });
+router.get('/',(req,res)=>{
+	userModel.findById(req.userInfo._id)
+	.then((user)=>{
+		// console.log("getCart:::",user);
+		user.getCart()
+		.then(cart=>{
+			res.json({
+				code:0,
+				data:cart
+			});
+		});
 
+	});
+});
 
 module.exports = router;

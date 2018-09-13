@@ -31,7 +31,7 @@ const cartSchema = mongoose.Schema({
 		type:Number
 	},
 	cartList:{
-		tyep:[cartListSchema]
+		type:[cartListSchema]
 	}
 });
 
@@ -52,13 +52,16 @@ const fzfSchema = mongoose.Schema({
         updatedAt: 'updated'
     }});
 
-fzfSchema.methods.getCart = ()=>{
+fzfSchema.methods.getCart =function(){
 	return new Promise((resolve,reject)=>{
 		if (!this.cart) {
-			resolve(null);
+			// console.log("null::",this.cart);
+            resolve({
+                cartList:[]
+            });
 		}
 		let getCartItem =this.cart.cartList.map((cartItem) => {
-			return productModel.findById(cartItem.product,'_id productName productPrice status productNum imageList')
+			return productModel.findById(cartItem.product,'_id productName productPrice productNum imageList')
 			.then((product)=>{
 				cartItem.product = product;
 				cartItem.totalPrice = cartItem.boughtCount*product.productPrice;
@@ -73,6 +76,7 @@ fzfSchema.methods.getCart = ()=>{
 				price+=item.totalPrice;
 			});
 			this.cart.AllPrice = price;
+			console.log('aa',this.cart);
 			resolve(this.cart);
 		});
 	});
