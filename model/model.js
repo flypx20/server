@@ -63,8 +63,11 @@ fzfSchema.methods.getCart =function(){
 		let getCartItem =this.cart.cartList.map((cartItem) => {
 			return productModel.findById(cartItem.product,'_id productName productPrice productNum imageList')
 			.then((product)=>{
+/*				product.productNum = 50;
+				product.save();*/
 				cartItem.product = product;
 				cartItem.totalPrice = cartItem.boughtCount*product.productPrice;
+
 				return cartItem;
 			});
 		});
@@ -73,10 +76,20 @@ fzfSchema.methods.getCart =function(){
 		.then((items)=>{
 			let price = 0;
 			items.forEach((item) => {
-				price+=item.totalPrice;
+				if (item.checked) {
+					price+=item.totalPrice;					
+				}
+
 			});
+			let notChecked = items.find((carts)=>{
+				return carts.checked == false;
+			});
+			if (notChecked) {
+				this.cart.allChecked = false;
+			}else{
+				this.cart.allChecked = true;				
+			}
 			this.cart.AllPrice = price;
-			console.log('aa',this.cart);
 			resolve(this.cart);
 		});
 	});
