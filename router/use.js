@@ -115,7 +115,112 @@ email:body.email},(err,data)=>{
 				res.json(result);
 			}
 		});
-	});
+	})
+	//添加收货地址
+	.post('/addShipping',(req,res)=>{
+		let body = req.body;
+		wish.findById(req.userInfo._id)
+		.then((user)=>{
+			if (user.shipping) {
+				user.shipping.push(body);				
+			}else{
+				user.shipping = [body];
+			}
+			user.save()
+			.then((data)=>{
+				res.json({
+					code:0,
+					data:user.shipping
+				});
+			});
+		});		
+	})
+	.get('/getShipping',(req,res)=>{
+		wish.findById(req.userInfo._id)
+		.then((user)=>{
+			res.json({
+				code:0,
+				data:user.shipping
+			});
+		});		
+	})
+	.get('/deleteShipping',(req,res)=>{
+		let id = req.query.id;
+		wish.findById(req.userInfo._id)
+		.then((user)=>{
+			if (user.shipping) {
+				let newShipping = user.shipping.filter((site)=>{
+					return site._id != id; 
+				});
+				user.shipping = newShipping;				
+			}else{
+				res.json({
+					code:1,
+					message:'删除失败，此条地址不存在'
+				});
+			}
+			user.save()
+			.then((data)=>{
+				res.json({
+					code:0,
+					data:user.shipping
+				});
+			});
+		});		
+	})
+	.get('/editShipping',(req,res)=>{
+		let id = req.query.id;
+		wish.findById(req.userInfo._id)
+		.then((user)=>{
+			if (user.shipping) {
+				user.shipping.forEach((item) => {
+				  if (item._id == id) {
+				  	res.json({
+				  		code:0,
+				  		data:item
+				  	});
+				  }
+				});
+			}else{
+				res.json({
+					code:1,
+					message:'编辑失败，此条地址不存在'
+				});
+			}
+		});		
+	})
+	.post('/editShipping',(req,res)=>{
+		let body = req.body;
+		wish.findById(req.userInfo._id)
+		.then((user)=>{
+			if (user.shipping) {
+			let shipping = user.shipping.find((item)=>{
+				return item._id == body.shippingId;
+			});
+	  		shipping.name = body.name;
+	  		shipping.province = body.province;
+	  		shipping.city = body.city;
+	  		shipping.address = body.address;
+	  		shipping.phone = body.phone;
+	  		shipping.zip = body.zip;
+			}else{
+				res.json({
+					code:1,
+					message:'编辑失败，此条地址不存在'
+				});
+			}
+			user.save()
+			.then((data)=>{
+					console.log('body::',user.shipping);
+
+				res.json({
+					code:0,
+					data:user.shipping
+				});
+			});
+		});		
+	});	
+
 
 
 module.exports = bookRouter;

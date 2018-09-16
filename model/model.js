@@ -35,6 +35,15 @@ const cartSchema = mongoose.Schema({
 	}
 });
 
+const shippingSchema = mongoose.Schema({
+	name:String,
+	province:String,
+	city:String,
+	address:String,
+	phone:Number,
+	zip:Number
+});
+
 const fzfSchema = mongoose.Schema({
 		username:String,
 		password:String,
@@ -46,7 +55,11 @@ const fzfSchema = mongoose.Schema({
 		email:String,
 		cart:{
 			type:cartSchema
-		}
+		},
+		shipping:{
+			type:[shippingSchema],
+			default:[]
+		}		
 },{ timestamps: {
         createdAt: 'created',
         updatedAt: 'updated'
