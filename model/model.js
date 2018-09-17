@@ -107,6 +107,49 @@ fzfSchema.methods.getCart =function(){
 		});
 	});
 };
+
+fzfSchema.methods.getOrderProductList = function(){
+	return new Promise((resolve,reject)=>{
+		if (!this.cart) {
+			resolve({
+				cartList:[]
+			});
+		}
+		let checkedCartList = this.cart.cartList.filter((cartItem)=>{
+			return cartItem.checked;
+		});
+		let getCartItems = checkedCartList.map(cartItem=>{
+			// console.log('cartItem:::',cartItem)
+			return productModel.findById(cartItem.product,'_id name price stock images')
+			.then(product=>{
+				// console.log('product:::',product);
+				// cartItem.product = product;
+				cartItem.productInfo = product;
+				cartItem.totalPrice = cartItem.boughtCount*product.productPrice;
+				// console.log('cartItem.product:::',cartItem.product);				
+				return cartItem;
+			});
+		});
+		Promise.all(getCartItems)
+		.then(cartItems=>{
+			// console.log('cartItems::::',cartItems)
+			let totalCartPrice = 0;
+			cartItems.forEach(item=>{
+				// console.log("item:::",item)
+				if (item.checked) {
+					totalCartPrice += item.totalPrice;
+				}
+			});
+			this.cart.AllPrice = totalCartPrice;
+
+			//设置新的购物车列表
+            this.cart.cartList = cartItems;
+			resolve(this.cart);
+			// console.log(this.cart)
+		});
+	});
+};
+
 const UserModle = mongoose.model('user',fzfSchema);
 
 module.exports = UserModle;

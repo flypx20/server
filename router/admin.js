@@ -1,7 +1,9 @@
 const Router = require('express').Router;
 
 const UserModel = require('../model/model.js');
-const CommentModel = require('../model/comment.js');
+const CategoryModel = require('../model/category.js');
+const productModel = require('../model/product.js');
+const orderModel = require('../model/order.js');
 const pagination = require('../model/pagination.js');
 const hmac = require('../hmac/hmac.js');
 const multer = require('multer');
@@ -93,13 +95,25 @@ router.post("/login",(req,res)=>{
     })
 
     .get('/count',(req,res)=>{
-        res.json({
-            code:0,
-            message:'',
-            userCount:100,
-            goodsCount:110,
-            catesCount:120
+
+        UserModel.find()
+        .then(user=>{
+            CategoryModel.find()
+            .then(cates=>{
+                productModel.find()
+                .then(products=>{
+
+                    res.json({
+                        code:0,
+                        message:'',
+                        userCount:user.length,
+                        goodsCount:products.length,
+                        catesCount:cates.length
+                    });
+                });
+            });
         });
+
     });
 
 router.get('/users',(req,res)=>{
@@ -279,6 +293,30 @@ router.post('/password',(req,res)=>{
             message:'更新密码成功',
             url:'/'
         });         
+    });
+});
+
+router.get('/order',(req,res)=>{
+    let page = req.query.page;
+    orderModel
+    .getPaginationOrders(page)
+    .then((result)=>{
+        res.json({ 
+            code:0,
+            data:{
+                current:result.current,
+                total:result.count,
+                list:result.docs,
+                pageSize:result.pageSize
+            }
+        });  
+    })
+    .catch(e=>{
+        console.log(e);
+        res.json({
+            code:1,
+            massage:'获取订单商品失败'
+        });
     });
 });
 
